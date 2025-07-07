@@ -9,7 +9,7 @@ const app = express();
 const port = 3001;
 
 app.use(cors({
-  origin: `http://localhost:3000`,
+  origin: "https://demo-ticket-frontend.vercel.app",
   credentials: true,
 }));
 app.use(express.json());
