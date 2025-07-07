@@ -63,8 +63,8 @@ export default async function register(req: Request, res: Response): Promise<any
     res.cookie('user', token, {
       httpOnly: true,
       maxAge: 60 * 60 * 7 * 1000,
-      sameSite : 'lax',
-      secure: false,
+      sameSite : 'none',
+      secure: true,
     });
 
   } catch (error) {
