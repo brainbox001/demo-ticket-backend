@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // binaryTargets = ["native", "debian-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TicketStatus {
+  OPEN
+  RESOLVED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+ model User {
+  id            Int     @id @default(autoincrement())
+  email         String  @unique
+  password      String
+
+  // Relationships
+  admin         Admin?
+  regular       RegularUser?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt()
+
+  @@map("user")
+}
+
+model RegularUser {
+  id        Int        @id @default(autoincrement())
+  name      String
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int        @unique
+  ticket    Ticket[]
+
+  @@map("regularUser")
+}
+
+model Admin {
+  id             Int        @id @default(autoincrement())
+  name           String
+
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int        @unique
+  category       Category?
+
+  isSuperAdmin   Boolean    @default(false)
+
+  @@map("admin")
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+
+  handler     Admin    @relation(fields: [handlerId], references: [id])
+  handlerId   Int      @unique
+  ticket      Ticket[]
+
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt()
+
+  @@map("category")
+}
+
+model Ticket {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+
+  status      TicketStatus @default(OPEN)
+  priority    TicketPriority @default(LOW)
+
+  sender      RegularUser      @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  senderId    Int
+
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId  Int
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("ticket")
+}
