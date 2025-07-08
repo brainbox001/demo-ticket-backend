@@ -6,7 +6,7 @@ import prisma from "./prismaClient";
 import cors from "cors";
 
 const app = express();
-const port = 3001;
+const port = 4623;
 
 app.use(cors({
   origin: "https://demo-ticket-frontend.vercel.app",
